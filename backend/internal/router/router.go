@@ -1,15 +1,14 @@
 package router
 
 import (
-	"clientmanager/internal/handlers"
+	"hotel-booking-backend/internal/handlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 
 func NewRouter(
-	clientHandler *handlers.ClientHandler,
-	contactHandler *handlers.ClientContactHandler,
+	roomHandler *handlers.RoomHandler,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
@@ -21,22 +20,13 @@ func NewRouter(
 		AllowCredentials: false,
 	}))
 
-	r.Route("/clients", func(r chi.Router) {
-		// Client routes
-		r.Get("/", clientHandler.GetClients)
-		r.Post("/", clientHandler.CreateClient)
-		r.Get("/{id}", clientHandler.GetClient)
-		r.Put("/{id}", clientHandler.UpdateClient)
-		r.Delete("/{id}", clientHandler.DeleteClient)
-
-		// Nested contact routes – /clients/{clientId}/contacts
-		r.Route("/{clientId}/contacts", func(r chi.Router) {
-			r.Get("/", contactHandler.GetContactsByClientID)
-			r.Post("/", contactHandler.CreateContact)
-			r.Get("/{id}", contactHandler.GetContact)
-			r.Put("/{id}", contactHandler.UpdateContact)
-			r.Delete("/{id}", contactHandler.DeleteContact)
-		})
+	r.Route("/Rooms", func(r chi.Router) {
+		// Room routes
+		r.Get("/", roomHandler.GetRooms)
+		r.Post("/", roomHandler.CreateRoom)
+		r.Get("/{id}", roomHandler.GetRoom)
+		r.Put("/{id}", roomHandler.UpdateRoom)
+		r.Delete("/{id}", roomHandler.DeleteRoom)
 	})
 
 	return r

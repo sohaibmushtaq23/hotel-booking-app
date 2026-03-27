@@ -1,12 +1,12 @@
 package main
 
 import (
-	"clientmanager/internal/config"
-	"clientmanager/internal/database"
-	"clientmanager/internal/handlers"
-	"clientmanager/internal/repository"
-	"clientmanager/internal/router"
-	"clientmanager/internal/service"
+	"hotel-booking-backend/internal/config"
+	"hotel-booking-backend/internal/database"
+	"hotel-booking-backend/internal/handlers"
+	"hotel-booking-backend/internal/repository"
+	"hotel-booking-backend/internal/router"
+	"hotel-booking-backend/internal/service"
 	"log"
 	"net/http"
 
@@ -18,17 +18,12 @@ func main() {
 	connString := config.GetConnectionString()
 	database.Connect(connString)
 
-	clientRepo := repository.NewClientRepository(database.DB)
-	clientService := service.NewClientService(clientRepo)
-	clientHandler := handlers.NewClientHandler(clientService)
+	roomRepo := repository.NewRoomRepository(database.DB)
+	roomService := service.NewRoomService(roomRepo)
+	roomHandler := handlers.NewRoomHandler(roomService)
 
-	contactRepo := repository.NewClientContactRepository(database.DB)
-	contactService := service.NewClientContactService(contactRepo)
-	contactHandler := handlers.NewClientContactHandler(contactService)
+	r := router.NewRouter(roomHandler)
 
-	r := router.NewRouter(clientHandler, contactHandler)
-
-	log.Println("Server running on :8080")
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 
