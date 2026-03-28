@@ -69,6 +69,52 @@ func (h *ReservationHandler) GetReservation(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(reservation)
 }
 
+func (h *ReservationHandler) GetCustomerReservations(w http.ResponseWriter, r *http.Request) {
+	idClient, err := strconv.Atoi(chi.URLParam(r, "idClient"))
+	if err != nil {
+		writeError(w, errors.New("invalid client id"))
+		return
+	}
+
+	reservations, err := h.service.GetByIDClient(r.Context(), idClient)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if reservations == nil {
+		reservations = []models.Reservation{}
+	}
+
+	json.NewEncoder(w).Encode(reservations)
+}
+
+func (h *ReservationHandler) GetRoomReservations(w http.ResponseWriter, r *http.Request) {
+	idRoom, err := strconv.Atoi(chi.URLParam(r, "idRoom"))
+	if err != nil {
+		writeError(w, errors.New("invalid room id"))
+		return
+	}
+
+	reservations, err := h.service.GetByIDRoom(r.Context(), idRoom)
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if reservations == nil {
+		reservations = []models.Reservation{}
+	}
+
+	json.NewEncoder(w).Encode(reservations)
+}
+
 func (h *ReservationHandler) UpdateReservation(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idParam)

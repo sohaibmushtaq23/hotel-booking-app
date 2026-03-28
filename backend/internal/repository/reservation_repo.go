@@ -19,7 +19,7 @@ var ErrReservationNotFound = errors.New("reservation not found")
 
 func (r *ReservationRepository) GetAll(ctx context.Context) ([]models.Reservation, error) {
 	query := `
-		SELECT ID, [IDCustomer], [TotalPayable], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
+		SELECT ID, [IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
 		FROM reservations
 		ORDER BY ID
 	`
@@ -38,7 +38,10 @@ func (r *ReservationRepository) GetAll(ctx context.Context) ([]models.Reservatio
 		err := rows.Scan(
 			&rv.ID,
 			&rv.IDCustomer,
-			&rv.TotalPayable,
+			&rv.IDRoom,
+			&rv.BookingStart,
+			&rv.BookingEnd,
+			&rv.ExtraCharges,
 			&rv.AmountPaid,
 			&rv.ReservedAt,
 			&rv.IDReservedBy,
@@ -60,7 +63,7 @@ func (r *ReservationRepository) GetAll(ctx context.Context) ([]models.Reservatio
 
 func (r *ReservationRepository) GetByID(ctx context.Context, id int) (*models.Reservation, error) {
 	query := `
-		SELECT ID, [IDCustomer], [TotalPayable], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
+		SELECT ID, [IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
 		FROM reservations
 		WHERE id = @p1
 	`
@@ -70,7 +73,10 @@ func (r *ReservationRepository) GetByID(ctx context.Context, id int) (*models.Re
 	err := row.Scan(
 		&rv.ID,
 		&rv.IDCustomer,
-		&rv.TotalPayable,
+		&rv.IDRoom,
+		&rv.BookingStart,
+		&rv.BookingEnd,
+		&rv.ExtraCharges,
 		&rv.AmountPaid,
 		&rv.ReservedAt,
 		&rv.IDReservedBy,
@@ -87,19 +93,112 @@ func (r *ReservationRepository) GetByID(ctx context.Context, id int) (*models.Re
 	return &rv, nil
 }
 
+func (r *ReservationRepository) GetByIDClient(ctx context.Context, idClient int) ([]models.Reservation, error) {
+	query := `
+		SELECT ID, [IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
+		FROM reservations
+		WHERE IDCustomer=@p1
+		ORDER BY ID
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, idClient)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reservations []models.Reservation
+
+	for rows.Next() {
+		var rv models.Reservation
+
+		err := rows.Scan(
+			&rv.ID,
+			&rv.IDCustomer,
+			&rv.IDRoom,
+			&rv.BookingStart,
+			&rv.BookingEnd,
+			&rv.ExtraCharges,
+			&rv.AmountPaid,
+			&rv.ReservedAt,
+			&rv.IDReservedBy,
+			&rv.Status,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, rv)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}
+
+func (r *ReservationRepository) GetByIDRoom(ctx context.Context, idRoom int) ([]models.Reservation, error) {
+	query := `
+		SELECT ID, [IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [ReservedAt], [IDReservedBy], [Status]
+		FROM reservations
+		WHERE IDRoom=@p1
+		ORDER BY ID
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, idRoom)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var reservations []models.Reservation
+
+	for rows.Next() {
+		var rv models.Reservation
+
+		err := rows.Scan(
+			&rv.ID,
+			&rv.IDCustomer,
+			&rv.IDRoom,
+			&rv.BookingStart,
+			&rv.BookingEnd,
+			&rv.ExtraCharges,
+			&rv.AmountPaid,
+			&rv.ReservedAt,
+			&rv.IDReservedBy,
+			&rv.Status,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		reservations = append(reservations, rv)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reservations, nil
+}
+
 func (r *ReservationRepository) Create(ctx context.Context, rv *models.Reservation) error {
 	query := `
 		INSERT INTO reservations 
-		([IDCustomer], [TotalPayable], [AmountPaid], [IDReservedBy], [Status])
+		([IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [IDReservedBy], [Status])
 		OUTPUT INSERTED.ID
-		VALUES (@IDCustomer,@TotalPayable,@AmountPaid, @IDReservedBy, @Status)
+		VALUES (@IDCustomer, @IDRoom, @BookingStart, @BookingEnd, @ExtraCharges, @AmountPaid, @IDReservedBy, @Status)
 	`
 
 	return r.db.QueryRowContext(
 		ctx,
 		query,
 		sql.Named("IDCustomer", rv.IDCustomer),
-		sql.Named("TotalPayable", rv.TotalPayable),
+		sql.Named("IDRoom", rv.IDRoom),
+		sql.Named("BookingStart", rv.BookingStart),
+		sql.Named("BookingEnd", rv.BookingEnd),
+		sql.Named("ExtraCharges", rv.ExtraCharges),
 		sql.Named("AmountPaid", rv.AmountPaid),
 		sql.Named("IDReservedBy", rv.IDReservedBy),
 		sql.Named("Status", rv.Status),
@@ -110,18 +209,25 @@ func (r *ReservationRepository) Update(ctx context.Context, id int, rv *models.R
 	query := `
         UPDATE reservations
         SET IDCustomer=@IDCustomer,
-			TotalPayable=@TotalPayable,
+			IDRoom=@IDRoom,
+			BookingStart=@BookingStart,
+			BookingEnd=@BookingEnd,
+			ExtraCharges=@ExtraCharges,
             AmountPaid=@AmountPaid,
             IDReservedBy=@IDReservedBy,
 			Status=@Status
-        OUTPUT INSERTED.ID, INSERTED.IDCustomer, INSERTED.TotalPayable, INSERTED.AmountPaid
-               ,INSERTED.IDReservedBy, INSERTED.Status
+        OUTPUT INSERTED.ID, INSERTED.IDCustomer, INSERTED.IDRoom, INSERTED.BookingStart
+			,INSERTED.BookingEnd, INSERTED.ExtraCharges, INSERTED.AmountPaid
+            ,INSERTED.IDReservedBy, INSERTED.Status
         WHERE ID=@id
     `
 
 	row := r.db.QueryRowContext(ctx, query,
 		sql.Named("IDCustomer", rv.IDCustomer),
-		sql.Named("TotalPayable", rv.TotalPayable),
+		sql.Named("IDRoom", rv.IDRoom),
+		sql.Named("BookingStart", rv.BookingStart),
+		sql.Named("BookingEnd", rv.BookingEnd),
+		sql.Named("ExtraCharges", rv.ExtraCharges),
 		sql.Named("AmountPaid", rv.AmountPaid),
 		sql.Named("IDReservedBy", rv.IDReservedBy),
 		sql.Named("Status", rv.Status),
@@ -132,7 +238,10 @@ func (r *ReservationRepository) Update(ctx context.Context, id int, rv *models.R
 	err := row.Scan(
 		&updated.ID,
 		&updated.IDCustomer,
-		&updated.TotalPayable,
+		&updated.IDRoom,
+		&updated.BookingStart,
+		&updated.BookingEnd,
+		&updated.ExtraCharges,
 		&updated.AmountPaid,
 		&updated.IDReservedBy,
 		&updated.Status,

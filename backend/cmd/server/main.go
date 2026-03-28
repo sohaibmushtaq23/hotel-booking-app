@@ -34,11 +34,7 @@ func main() {
 	reservationService := service.NewReservationService(reservationRepo)
 	reservationHandler := handlers.NewReservationHandler(reservationService)
 
-	roomReservationRepo := repository.NewRoomReservationRepository(database.DB)
-	roomReservationService := service.NewRoomReservationService(roomReservationRepo)
-	roomReservationHandler := handlers.NewRoomReservationHandler(roomReservationService)
-
-	r := router.NewRouter(roomHandler, clientHandler, userHandler, reservationHandler, roomReservationHandler)
+	r := router.NewRouter(roomHandler, clientHandler, userHandler, reservationHandler)
 
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

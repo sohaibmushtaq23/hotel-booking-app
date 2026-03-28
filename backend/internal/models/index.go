@@ -41,19 +41,12 @@ type User struct {
 type Reservation struct {
 	ID           int        `json:"id"`
 	IDCustomer   int        `json:"idCustomer"`
-	TotalPayable float64    `json:"totalPayable"`
+	IDRoom       int        `json:"idRoom"`
+	BookingStart *time.Time `json:"bookingStart"`
+	BookingEnd   *time.Time `json:"bookingEnd"`
+	ExtraCharges float64    `json:"extraCharges"`
 	AmountPaid   float64    `json:"amountPaid"`
 	ReservedAt   *time.Time `json:"reservedAt"`
 	IDReservedBy int        `json:"idReservedBy"`
 	Status       string     `json:"status"`
-}
-
-type RoomReservation struct {
-	ID            int       `json:"id"`
-	IDReservation int       `json:"idReservation"`
-	IDRoom        int       `json:"idRoom"`
-	BookingStart  time.Time `json:"bookingStart"`
-	BookingEnd    time.Time `json:"bookingEnd"`
-	ExtraCharges  float64   `json:"extraCharges"`
-	Status        string    `json:"status"`
 }

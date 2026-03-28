@@ -26,6 +26,14 @@ func (s *ReservationService) GetByID(ctx context.Context, id int) (*models.Reser
 	return s.repo.GetByID(ctx, id)
 }
 
+func (s *ReservationService) GetByIDClient(ctx context.Context, idClient int) ([]models.Reservation, error) {
+	return s.repo.GetByIDClient(ctx, idClient)
+}
+
+func (s *ReservationService) GetByIDRoom(ctx context.Context, idRoom int) ([]models.Reservation, error) {
+	return s.repo.GetByIDRoom(ctx, idRoom)
+}
+
 func (s *ReservationService) Update(ctx context.Context, id int, c *models.Reservation) (*models.Reservation, error) {
 	return s.repo.Update(ctx, id, c)
 }

@@ -12,7 +12,6 @@ func NewRouter(
 	clientHandler *handlers.ClientHandler,
 	userHandler *handlers.UserHandler,
 	reservationHandler *handlers.ReservationHandler,
-	reservationDetailHandler *handlers.RoomReservationHandler,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
@@ -34,7 +33,7 @@ func NewRouter(
 
 		// Room reservation detail routes
 		r.Route("/{idRoom}/details", func(r chi.Router) {
-			r.Get("/", reservationDetailHandler.GetRoomReservations)
+			r.Get("/", reservationHandler.GetRoomReservations)
 		})
 	})
 
@@ -45,6 +44,11 @@ func NewRouter(
 		r.Get("/{id}", clientHandler.GetClient)
 		r.Put("/{id}", clientHandler.UpdateClient)
 		r.Delete("/{id}", clientHandler.DeleteClient)
+
+		// Client reservation detail routes
+		r.Route("/{idClient}/details", func(r chi.Router) {
+			r.Get("/", reservationHandler.GetCustomerReservations)
+		})
 	})
 
 	// User routes
@@ -64,14 +68,6 @@ func NewRouter(
 		r.Put("/{id}", reservationHandler.UpdateReservation)
 		r.Delete("/{id}", reservationHandler.DeleteReservation)
 
-		// Reservation detail routes
-		r.Route("/{idReservation}/details", func(r chi.Router) {
-			r.Get("/", reservationDetailHandler.GetReservationDetail)
-			r.Post("/", reservationDetailHandler.CreateReservation)
-			r.Get("/{id}", reservationDetailHandler.GetReservation)
-			r.Put("/{id}", reservationDetailHandler.UpdateReservation)
-			r.Delete("/{id}", reservationDetailHandler.DeleteReservation)
-		})
 	})
 
 	return r
