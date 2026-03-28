@@ -22,7 +22,23 @@ func main() {
 	roomService := service.NewRoomService(roomRepo)
 	roomHandler := handlers.NewRoomHandler(roomService)
 
-	r := router.NewRouter(roomHandler)
+	clientRepo := repository.NewClientRepository(database.DB)
+	clientService := service.NewClientService(clientRepo)
+	clientHandler := handlers.NewClientHandler(clientService)
+
+	userRepo := repository.NewUserRepository(database.DB)
+	userService := service.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userService)
+
+	reservationRepo := repository.NewReservationRepository(database.DB)
+	reservationService := service.NewReservationService(reservationRepo)
+	reservationHandler := handlers.NewReservationHandler(reservationService)
+
+	roomReservationRepo := repository.NewRoomReservationRepository(database.DB)
+	roomReservationService := service.NewRoomReservationService(roomReservationRepo)
+	roomReservationHandler := handlers.NewRoomReservationHandler(roomReservationService)
+
+	r := router.NewRouter(roomHandler, clientHandler, userHandler, reservationHandler, roomReservationHandler)
 
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

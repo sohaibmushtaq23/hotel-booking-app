@@ -15,7 +15,7 @@ func NewRoomRepository(db *sql.DB) *RoomRepository {
 	return &RoomRepository{db: db}
 }
 
-var ErrNotFound = errors.New("room not found")
+var ErrRoomNotFound = errors.New("room not found")
 
 func (r *RoomRepository) GetAll(ctx context.Context) ([]models.Room, error) {
 	query := `
@@ -98,7 +98,7 @@ func (r *RoomRepository) GetByID(ctx context.Context, id int) (*models.Room, err
 	)
 
 	if err == sql.ErrNoRows {
-		return nil, ErrNotFound
+		return nil, ErrRoomNotFound
 	}
 	if err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func (r *RoomRepository) Update(ctx context.Context, id int, rm *models.Room) (*
 		&updated.Status,
 	)
 	if err == sql.ErrNoRows {
-		return nil, ErrNotFound
+		return nil, ErrRoomNotFound
 	}
 	if err != nil {
 		return nil, err
@@ -216,7 +216,7 @@ func (r *RoomRepository) Delete(ctx context.Context, id int) error {
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return ErrNotFound
+		return ErrRoomNotFound
 	}
 
 	return nil

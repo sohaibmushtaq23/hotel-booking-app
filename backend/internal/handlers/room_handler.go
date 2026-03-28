@@ -24,7 +24,8 @@ func writeError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json")
 
 	switch {
-	case errors.Is(err, repository.ErrNotFound):
+	case errors.Is(err, repository.ErrRoomNotFound), errors.Is(err, repository.ErrClientNotFound),
+		errors.Is(err, repository.ErrUserNotFound):
 		w.WriteHeader(http.StatusNotFound)
 	default:
 		w.WriteHeader(http.StatusBadRequest)

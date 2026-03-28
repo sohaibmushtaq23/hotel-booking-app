@@ -9,6 +9,10 @@ import (
 
 func NewRouter(
 	roomHandler *handlers.RoomHandler,
+	clientHandler *handlers.ClientHandler,
+	userHandler *handlers.UserHandler,
+	reservationHandler *handlers.ReservationHandler,
+	reservationDetailHandler *handlers.RoomReservationHandler,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
@@ -20,13 +24,54 @@ func NewRouter(
 		AllowCredentials: false,
 	}))
 
-	r.Route("/Rooms", func(r chi.Router) {
-		// Room routes
+	// Room routes
+	r.Route("/rooms", func(r chi.Router) {
 		r.Get("/", roomHandler.GetRooms)
 		r.Post("/", roomHandler.CreateRoom)
 		r.Get("/{id}", roomHandler.GetRoom)
 		r.Put("/{id}", roomHandler.UpdateRoom)
 		r.Delete("/{id}", roomHandler.DeleteRoom)
+
+		// Room reservation detail routes
+		r.Route("/{idRoom}/details", func(r chi.Router) {
+			r.Get("/", reservationDetailHandler.GetRoomReservations)
+		})
+	})
+
+	// Client routes
+	r.Route("/clients", func(r chi.Router) {
+		r.Get("/", clientHandler.GetClients)
+		r.Post("/", clientHandler.CreateClient)
+		r.Get("/{id}", clientHandler.GetClient)
+		r.Put("/{id}", clientHandler.UpdateClient)
+		r.Delete("/{id}", clientHandler.DeleteClient)
+	})
+
+	// User routes
+	r.Route("/users", func(r chi.Router) {
+		r.Get("/", userHandler.GetUsers)
+		r.Post("/", userHandler.CreateUser)
+		r.Get("/{id}", userHandler.GetUser)
+		r.Put("/{id}", userHandler.UpdateUser)
+		r.Delete("/{id}", userHandler.DeleteUser)
+	})
+
+	// Reservation routes
+	r.Route("/reservations", func(r chi.Router) {
+		r.Get("/", reservationHandler.GetReservations)
+		r.Post("/", reservationHandler.CreateReservation)
+		r.Get("/{id}", reservationHandler.GetReservation)
+		r.Put("/{id}", reservationHandler.UpdateReservation)
+		r.Delete("/{id}", reservationHandler.DeleteReservation)
+
+		// Reservation detail routes
+		r.Route("/{idReservation}/details", func(r chi.Router) {
+			r.Get("/", reservationDetailHandler.GetReservationDetail)
+			r.Post("/", reservationDetailHandler.CreateReservation)
+			r.Get("/{id}", reservationDetailHandler.GetReservation)
+			r.Put("/{id}", reservationDetailHandler.UpdateReservation)
+			r.Delete("/{id}", reservationDetailHandler.DeleteReservation)
+		})
 	})
 
 	return r

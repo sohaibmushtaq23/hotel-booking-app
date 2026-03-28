@@ -22,13 +22,13 @@ type Room struct {
 	Status      string  `json:"status"`
 }
 
-type Customer struct {
-	ID           int     `json:"id"`
-	CustomerName string  `json:"customerName"`
-	CNIC         string  `json:"cnic"`
-	Phone        string  `json:"phone"`
-	Email        string  `json:"email"`
-	Discount     float32 `json:"discount"`
+type Client struct {
+	ID         int     `json:"id"`
+	ClientName string  `json:"clientName"`
+	CNIC       string  `json:"cnic"`
+	Phone      string  `json:"phone"`
+	Email      string  `json:"email"`
+	Discount   float32 `json:"discount"`
 }
 
 type User struct {
@@ -39,13 +39,13 @@ type User struct {
 }
 
 type Reservation struct {
-	ID           int       `json:"id"`
-	IDCustomer   int       `json:"idCustomer"`
-	TotalPayable float64   `json:"totalPayable"`
-	AmountPaid   float64   `json:"amountPaid"`
-	ReservedAt   time.Time `json:"reservedAt"`
-	IDReservedBy int       `json:"idReservedBy"`
-	Status       string    `json:"status"`
+	ID           int        `json:"id"`
+	IDCustomer   int        `json:"idCustomer"`
+	TotalPayable float64    `json:"totalPayable"`
+	AmountPaid   float64    `json:"amountPaid"`
+	ReservedAt   *time.Time `json:"reservedAt"`
+	IDReservedBy int        `json:"idReservedBy"`
+	Status       string     `json:"status"`
 }
 
 type RoomReservation struct {
