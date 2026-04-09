@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', () => {
       const data = await UserAPI.getUsers()
       users.value = data
 
-    // Auto‑select first client if list not empty and none selected
+    // Auto‑select first user if list not empty and none selected
     if (data.length > 0 && !selectedUser.value) {
       selectUser(data[0]!)
     }
@@ -73,7 +73,7 @@ export const useUserStore = defineStore('user', () => {
     loading.value = true
     error.value = null
   
-    // Find the index of the client to delete (before removal)
+    // Find the index of the user to delete (before removal)
     const index = users.value.findIndex(c => c.id === id)
     if (index === -1) return  // not found, nothing to delete
   

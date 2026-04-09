@@ -39,7 +39,7 @@
         </v-navigation-drawer>
 
     <v-main>
-      <v-container fluid >
+      <v-container fluid class="fill-height pa-0" >
         <slot/>
       </v-container>
     </v-main>

@@ -21,7 +21,7 @@ func (r *RoomRepository) GetAll(ctx context.Context) ([]models.Room, error) {
 	query := `
 		SELECT ID, [RoomNo], [RoomWidth],[RoomLength],[DoubleBeds],[SingleBeds]
 		,[Windows],[AC],[Wifi],[HotWater],[Balcony],[Location],[RoomCharges]
-		,[Remarks],[Status]
+		,[RoomImage],[Remarks],[Status]
 		FROM rooms
 		ORDER BY ID
 	`
@@ -51,6 +51,7 @@ func (r *RoomRepository) GetAll(ctx context.Context) ([]models.Room, error) {
 			&rm.Balcony,
 			&rm.Location,
 			&rm.RoomCharges,
+			&rm.RoomImage,
 			&rm.Remarks,
 			&rm.Status,
 		)
@@ -72,7 +73,7 @@ func (r *RoomRepository) GetByID(ctx context.Context, id int) (*models.Room, err
 	query := `
 		SELECT ID, [RoomNo], [RoomWidth],[RoomLength],[DoubleBeds],[SingleBeds]
 		,[Windows],[AC],[Wifi],[HotWater],[Balcony],[Location],[RoomCharges]
-		,[Remarks],[Status]
+		,[RoomImage],[Remarks],[Status]
 		FROM rooms
 		WHERE id = @p1
 	`
@@ -93,6 +94,7 @@ func (r *RoomRepository) GetByID(ctx context.Context, id int) (*models.Room, err
 		&rm.Balcony,
 		&rm.Location,
 		&rm.RoomCharges,
+		&rm.RoomImage,
 		&rm.Remarks,
 		&rm.Status,
 	)
@@ -112,9 +114,9 @@ func (r *RoomRepository) Create(ctx context.Context, rm *models.Room) error {
 		INSERT INTO rooms 
 		([RoomNo], [RoomWidth],[RoomLength],[DoubleBeds],[SingleBeds]
 		,[Windows],[AC],[Wifi],[HotWater],[Balcony],[Location],[RoomCharges]
-		,[Remarks],[Status])
+		,[RoomImage],[Remarks],[Status])
 		OUTPUT INSERTED.ID
-		VALUES (@RoomNo,@RoomWidth,@RoomLength,@DoubleBeds,@SingleBeds,@Windows,@AC, @Wifi, @HotWater, @Balcony, @Location, @RoomCharges,  @Remarks,  @Status)
+		VALUES (@RoomNo,@RoomWidth,@RoomLength,@DoubleBeds,@SingleBeds,@Windows,@AC, @Wifi, @HotWater, @Balcony, @Location, @RoomCharges, @RoomImage, @Remarks,  @Status)
 	`
 
 	return r.db.QueryRowContext(
@@ -132,6 +134,7 @@ func (r *RoomRepository) Create(ctx context.Context, rm *models.Room) error {
 		sql.Named("Balcony", rm.Balcony),
 		sql.Named("Location", rm.Location),
 		sql.Named("RoomCharges", rm.RoomCharges),
+		sql.Named("RoomImage", rm.RoomImage),
 		sql.Named("Remarks", rm.Remarks),
 		sql.Named("Status", rm.Status),
 	).Scan(&rm.ID)
@@ -152,12 +155,13 @@ func (r *RoomRepository) Update(ctx context.Context, id int, rm *models.Room) (*
             Balcony=@Balcony,
             Location=@Location,
 			RoomCharges=@RoomCharges,
+			RoomImage=@RoomImage,
 			Remarks=@Remarks,
 			Status=@Status
         OUTPUT INSERTED.ID, INSERTED.RoomNo, INSERTED.RoomWidth, INSERTED.RoomLength,
                INSERTED.DoubleBeds, INSERTED.SingleBeds, INSERTED.Windows, INSERTED.AC,
                INSERTED.Wifi, INSERTED.HotWater, INSERTED.Balcony, INSERTED.Location,
-               INSERTED.RoomCharges, INSERTED.Remarks, INSERTED.Status
+               INSERTED.RoomCharges, INSERTED.RoomImage, INSERTED.Remarks, INSERTED.Status
         WHERE ID=@id
     `
 
@@ -174,6 +178,7 @@ func (r *RoomRepository) Update(ctx context.Context, id int, rm *models.Room) (*
 		sql.Named("Balcony", rm.Balcony),
 		sql.Named("Location", rm.Location),
 		sql.Named("RoomCharges", rm.RoomCharges),
+		sql.Named("RoomImage", rm.RoomImage),
 		sql.Named("Remarks", rm.Remarks),
 		sql.Named("Status", rm.Status),
 		sql.Named("id", id),
@@ -194,6 +199,7 @@ func (r *RoomRepository) Update(ctx context.Context, id int, rm *models.Room) (*
 		&updated.Balcony,
 		&updated.Location,
 		&updated.RoomCharges,
+		&updated.RoomImage,
 		&updated.Remarks,
 		&updated.Status,
 	)

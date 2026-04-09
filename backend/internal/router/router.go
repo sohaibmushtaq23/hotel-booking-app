@@ -2,6 +2,7 @@ package router
 
 import (
 	"hotel-booking-backend/internal/handlers"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -22,6 +23,11 @@ func NewRouter(
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: false,
 	}))
+
+	fileServer := http.FileServer(http.Dir("./uploads"))
+	r.Handle("/uploads/*", http.StripPrefix("/uploads/", fileServer))
+
+	r.Post("/upload", handlers.UploadRoomImage)
 
 	// Room routes
 	r.Route("/rooms", func(r chi.Router) {

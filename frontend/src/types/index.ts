@@ -28,6 +28,7 @@ export interface Room {
     balcony: boolean
     location: string
     roomCharges?: number
+    roomImage?: string
     remarks?: string
     status?: string
 }

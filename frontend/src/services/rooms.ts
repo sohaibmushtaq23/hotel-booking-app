@@ -27,3 +27,4 @@ export const RoomAPI={
     await api.delete(`/rooms/${id}`);
   }
 }
+

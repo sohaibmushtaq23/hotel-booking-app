@@ -18,6 +18,7 @@ type Room struct {
 	Balcony     bool    `json:"balcony"`
 	Location    string  `json:"location"`
 	RoomCharges float64 `json:"roomCharges"`
+	RoomImage   *string `json:"roomImage"`
 	Remarks     string  `json:"remarks"`
 	Status      string  `json:"status"`
 }
