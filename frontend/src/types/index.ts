@@ -45,3 +45,19 @@ export interface Booking{
     idReservedBy: number
     status: string
 }
+
+export interface BookingDetails {
+    id: number
+    customerName: string      
+    roomNo: string            
+    bookingStart: string | null
+    bookingEnd: string | null
+    extraCharges: number
+    amountPaid: number
+    reservedAt: string | null
+    reservedBy: string        
+    status: string
+    idCustomer: number
+    idRoom: number
+    idReservedBy: number
+}

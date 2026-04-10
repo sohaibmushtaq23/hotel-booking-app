@@ -71,25 +71,6 @@ export const useClientStore = defineStore('client', () => {
     }
   }
 
-  // async function deleteClient(id: number) {
-  //   loading.value = true
-  //   error.value = null
-  //   try {
-  //     await ClientAPI.deleteClient(id)
-  //     // Remove from local list
-  //     clients.value = clients.value.filter(c => c.id !== id)
-  //     // If deleted client was selected, clear selection
-  //     if (selectedClient.value?.id === id) {
-  //       selectedClient.value = null
-  //     }
-  //   } catch (err) {
-  //     error.value = 'Failed to delete client'
-  //     throw err
-  //   } finally {
-  //     loading.value = false
-  //   }
-  // }
-
   async function deleteClient(id: number) {
     loading.value = true
     error.value = null
@@ -101,13 +82,11 @@ export const useClientStore = defineStore('client', () => {
     try {
       await ClientAPI.deleteClient(id)
   
-      // Remove from local list
       clients.value = clients.value.filter(c => c.id !== id)
   
-      // Determine which client to select next (if any)
       if (clients.value.length > 0) {
         let newIndex = index
-        // If the removed client was not the last one, the client at the same index becomes the next one
+
         if (newIndex >= clients.value.length) {
           // Deleted was the last → select the new last client
           newIndex = clients.value.length - 1

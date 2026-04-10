@@ -51,3 +51,19 @@ type Reservation struct {
 	IDReservedBy int        `json:"idReservedBy"`
 	Status       string     `json:"status"`
 }
+
+type BookingDetails struct {
+	ID           int     `json:"id"`
+	CustomerName string  `json:"customerName"`
+	RoomNo       string  `json:"roomNo"`
+	BookingStart *string `json:"bookingStart"`
+	BookingEnd   *string `json:"bookingEnd"`
+	ExtraCharges float64 `json:"extraCharges"`
+	AmountPaid   float64 `json:"amountPaid"`
+	ReservedAt   *string `json:"reservedAt"`
+	ReservedBy   string  `json:"reservedBy"`
+	Status       string  `json:"status"`
+	IDCustomer   int     `json:"idCustomer"`
+	IDRoom       int     `json:"idRoom"`
+	IDReservedBy int     `json:"idReservedBy"`
+}

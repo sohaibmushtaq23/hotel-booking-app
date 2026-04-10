@@ -68,7 +68,7 @@ func NewRouter(
 
 	// Reservation routes
 	r.Route("/reservations", func(r chi.Router) {
-		r.Get("/", reservationHandler.GetReservations)
+		r.Get("/", reservationHandler.GetBookingsWithDetails)
 		r.Post("/", reservationHandler.CreateReservation)
 		r.Get("/{id}", reservationHandler.GetReservation)
 		r.Put("/{id}", reservationHandler.UpdateReservation)

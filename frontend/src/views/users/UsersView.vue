@@ -20,6 +20,7 @@
           <UserDetails
             ref="userDetailsRef"
             :user="store.selectedUser"
+            :user-roles="userRoles"
             @show-message="showNotification"
             @update-user="handleUpdateUser"
           />
@@ -49,7 +50,7 @@
             <v-form ref="addFormRef" v-model="addValid" >
               <v-text-field v-model="newUser.userName" label="User Name" :rules="[rules.required]"></v-text-field>
               <v-text-field v-model="newUser.password" label="Password" :rules="[rules.required]" type="password"></v-text-field>
-              <v-text-field v-model="newUser.userRole" label="User Role" :rules="[rules.required]"></v-text-field>
+              <v-select :items="userRoles" v-model="newUser.userRole" label="User Role" :rules="[rules.required]"></v-select>
               
             </v-form>
           </v-card-text>
@@ -80,6 +81,8 @@
 
     const store=useUserStore()
     store.fetchUsers()
+
+    const userRoles=["Admin","Receptionist"]
 
     //===Add dialog===
     const addDialog=ref(false)

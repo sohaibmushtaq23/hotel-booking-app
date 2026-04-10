@@ -270,3 +270,84 @@ func (r *ReservationRepository) Delete(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (r *ReservationRepository) GetAllWithDetails(ctx context.Context) ([]models.BookingDetails, error) {
+	query := `
+		SELECT 
+			b.id,
+			c.clientName AS customerName,
+			r.roomNo,
+			b.bookingStart,
+			b.bookingEnd,
+			b.extraCharges,
+			b.amountPaid,
+			b.reservedAt,
+			u.userName AS reservedBy,
+			b.status,
+			b.IDCustomer,
+			b.IDRoom,
+			b.IDReservedBy
+		FROM reservations b
+		JOIN clients c ON b.idCustomer = c.id
+		JOIN rooms r ON b.idRoom = r.id
+		JOIN users u ON b.idReservedBy = u.id
+		ORDER BY b.bookingStart DESC
+	`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bookings []models.BookingDetails
+
+	for rows.Next() {
+		var b models.BookingDetails
+		var bookingStart, bookingEnd, reservedAt sql.NullString // handle NULLs
+
+		err := rows.Scan(
+			&b.ID,
+			&b.CustomerName,
+			&b.RoomNo,
+			&bookingStart,
+			&bookingEnd,
+			&b.ExtraCharges,
+			&b.AmountPaid,
+			&reservedAt,
+			&b.ReservedBy,
+			&b.Status,
+			&b.IDCustomer,
+			&b.IDRoom,
+			&b.IDReservedBy,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// Convert NULL to nil pointers
+		if bookingStart.Valid {
+			b.BookingStart = &bookingStart.String
+		} else {
+			b.BookingStart = nil
+		}
+		if bookingEnd.Valid {
+			b.BookingEnd = &bookingEnd.String
+		} else {
+			b.BookingEnd = nil
+		}
+		if reservedAt.Valid {
+			b.ReservedAt = &reservedAt.String
+		} else {
+			b.ReservedAt = nil
+		}
+
+		bookings = append(bookings, b)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bookings, nil
+}

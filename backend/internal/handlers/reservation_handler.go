@@ -155,3 +155,18 @@ func (h *ReservationHandler) DeleteReservation(w http.ResponseWriter, r *http.Re
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *ReservationHandler) GetBookingsWithDetails(w http.ResponseWriter, r *http.Request) {
+
+	var bookings interface{}
+	var err error
+	bookings, err = h.service.GetAllWithDetails(r.Context())
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(bookings)
+}

@@ -59,6 +59,7 @@
               label="Discount"
               type="number"
               :readonly="!editMode"
+              suffix="%"
               step="0.25"
               min="0"
               max="20"

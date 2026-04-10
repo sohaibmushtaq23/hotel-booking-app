@@ -41,10 +41,10 @@
             <v-col cols="3">
               <div class="font-weight-bold">{{ client.clientName }}</div>
             </v-col>
-            <v-col cols="3">{{ client.cnic }}</v-col>
+            <v-col cols="2">{{ client.cnic }}</v-col>
             <v-col cols="2">{{ client.phone || '—' }}</v-col>
             <v-col cols="3">{{ client.email || '—' }}</v-col>
-            <v-col cols="1" class="text-right">{{ client.discount }}%</v-col>
+            <v-col cols="2" class="text-right">{{ client.discount }}%</v-col>
           </v-row>
         </v-list-item>
       </v-list>

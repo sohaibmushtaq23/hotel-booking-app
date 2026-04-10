@@ -41,3 +41,7 @@ func (s *ReservationService) Update(ctx context.Context, id int, c *models.Reser
 func (s *ReservationService) Delete(ctx context.Context, id int) error {
 	return s.repo.Delete(ctx, id)
 }
+
+func (s *ReservationService) GetAllWithDetails(ctx context.Context) ([]models.BookingDetails, error) {
+	return s.repo.GetAllWithDetails(ctx)
+}

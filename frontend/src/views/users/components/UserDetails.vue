@@ -38,12 +38,7 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field
-              v-model="formUser.userRole"
-              label="User Role"
-              :readonly="!editMode"
-              :rules="[rules.required]"
-            />
+            <v-select :items="userRoles" v-model="formUser.userRole" label="User Role" :rules="[rules.required]" :readonly="!editMode"></v-select>
           </v-col>
         </v-row>
       </v-form>
@@ -57,6 +52,7 @@ import type { User } from '@/types/index'
 
 const props = defineProps<{
   user: User | null
+  userRoles: string[]
 }>()
 
 const emit = defineEmits<{
