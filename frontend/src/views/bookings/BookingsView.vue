@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
       <v-card>
-        <v-toolbar color="#346739" title="Bookings" dark>
+        <v-toolbar color="#79AE6F" title="Bookings" dark>
           <v-btn color="white" variant="text" prepend-icon="mdi-plus" @click="openCreateDialog">
             New Booking
           </v-btn>
