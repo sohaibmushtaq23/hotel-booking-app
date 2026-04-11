@@ -31,7 +31,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(userService)
 
 	reservationRepo := repository.NewReservationRepository(database.DB)
-	reservationService := service.NewReservationService(reservationRepo)
+	reservationService := service.NewReservationService(reservationRepo, roomRepo)
 	reservationHandler := handlers.NewReservationHandler(reservationService)
 
 	r := router.NewRouter(roomHandler, clientHandler, userHandler, reservationHandler)

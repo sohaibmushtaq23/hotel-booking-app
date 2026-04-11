@@ -183,15 +183,15 @@ func (r *ReservationRepository) GetByIDRoom(ctx context.Context, idRoom int) ([]
 	return reservations, nil
 }
 
-func (r *ReservationRepository) Create(ctx context.Context, rv *models.Reservation) error {
+func (r *ReservationRepository) Create(ctx context.Context, rv *models.Reservation) (int, error) {
 	query := `
 		INSERT INTO reservations 
 		([IDCustomer], [IDRoom], [BookingStart], [BookingEnd], [ExtraCharges], [AmountPaid], [IDReservedBy], [Status])
-		OUTPUT INSERTED.ID
+		OUTPUT INSERTED.ID, INSERTED.IDRoom
 		VALUES (@IDCustomer, @IDRoom, @BookingStart, @BookingEnd, @ExtraCharges, @AmountPaid, @IDReservedBy, @Status)
 	`
-
-	return r.db.QueryRowContext(
+	var newID, roomID int
+	err := r.db.QueryRowContext(
 		ctx,
 		query,
 		sql.Named("IDCustomer", rv.IDCustomer),
@@ -202,7 +202,14 @@ func (r *ReservationRepository) Create(ctx context.Context, rv *models.Reservati
 		sql.Named("AmountPaid", rv.AmountPaid),
 		sql.Named("IDReservedBy", rv.IDReservedBy),
 		sql.Named("Status", rv.Status),
-	).Scan(&rv.ID)
+	).Scan(&newID, &roomID)
+
+	if err != nil {
+		return 0, err
+	}
+	rv.ID = newID
+	return roomID, nil
+
 }
 
 func (r *ReservationRepository) Update(ctx context.Context, id int, rv *models.Reservation) (*models.Reservation, error) {
@@ -255,20 +262,29 @@ func (r *ReservationRepository) Update(ctx context.Context, id int, rv *models.R
 	return &updated, nil
 }
 
-func (r *ReservationRepository) Delete(ctx context.Context, id int) error {
+func (r *ReservationRepository) Delete(ctx context.Context, id int) (int, error) {
+	var roomID int
+
+	queryGet := `SELECT IDRoom FROM reservations WHERE id=@p1`
+
+	err := r.db.QueryRowContext(ctx, queryGet, id).Scan(&roomID)
+	if err != nil {
+		return 0, err
+	}
+
 	query := `DELETE FROM reservations WHERE id=@p1`
 
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return ErrReservationNotFound
+		return 0, ErrReservationNotFound
 	}
 
-	return nil
+	return roomID, nil
 }
 
 func (r *ReservationRepository) GetAllWithDetails(ctx context.Context) ([]models.BookingDetails, error) {

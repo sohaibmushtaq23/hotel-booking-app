@@ -227,3 +227,30 @@ func (r *RoomRepository) Delete(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (r *RoomRepository) UpdateRoomStatus(ctx context.Context, roomID int) error {
+	query := `
+        UPDATE rooms
+        SET status = (
+            SELECT CASE
+                WHEN EXISTS (
+                    SELECT 1 FROM reservations
+                    WHERE idRoom = @roomID
+                      AND status = 'Confirmed'
+                      AND CAST(GETDATE() AS DATE) BETWEEN CAST(bookingStart AS DATE) AND CAST(bookingEnd AS DATE)
+                ) THEN 'Occupied'
+                WHEN EXISTS (
+                    SELECT 1 FROM reservations
+                    WHERE idRoom = @roomID
+                      AND status = 'Confirmed'
+                      AND CAST(bookingStart AS DATE) > CAST(GETDATE() AS DATE)
+                ) THEN 'Reserved'
+                ELSE 'Available'
+            END
+        )
+        WHERE id = @roomID
+    `
+
+	_, err := r.db.ExecContext(ctx, query, sql.Named("roomID", roomID))
+	return err
+}

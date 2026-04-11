@@ -26,7 +26,7 @@ func (h *ReservationHandler) CreateReservation(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := h.service.Create(r.Context(), &reservation); err != nil {
+	if _, err := h.service.Create(r.Context(), &reservation); err != nil {
 		writeError(w, err)
 		return
 	}
@@ -148,7 +148,7 @@ func (h *ReservationHandler) DeleteReservation(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := h.service.Delete(r.Context(), id); err != nil {
+	if _, err := h.service.Delete(r.Context(), id); err != nil {
 		writeError(w, err)
 		return
 	}
