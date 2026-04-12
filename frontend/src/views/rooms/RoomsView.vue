@@ -12,6 +12,7 @@
             @select="store.selectRoom"
             @add="openAddDialog"
             @delete="openDeleteDialog(store.selectedRoom!)"
+            @create-booking="openBookingDialog"
             />
 
         </v-col>
@@ -74,6 +75,13 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Booking Creation Dialog -->
+      <BookingForm
+        v-model="bookingDialogVisible"
+        :booking="editingBookingForDialog"
+        @save="onBookingSaved"
+      />
   
       <!-- Global Snackbar -->
       <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
@@ -88,11 +96,14 @@
   <script setup lang="ts">
     import { ref, computed } from 'vue'
     import { useRoomStore } from '@/stores/roomStore'
-    import type { Room } from '@/types'
+    import { useBookingStore } from '@/stores/bookingStore'
+    import type {Booking, Room } from '@/types'
     import RoomList from './components/RoomList.vue'
     import RoomDetails from './components/RoomDetails.vue'
+    import BookingForm from '@/views/bookings/components/BookingForm.vue'
 
     const store=useRoomStore()
+    const bookingStore=useBookingStore()
     store.fetchRooms()
 
     const floorNames = ['Ground', 'First', 'Second', 'Third']
@@ -255,6 +266,46 @@
 
     function showNotification(message: string, color= 'success'){
       snackbar.value={show:true, message, color}
+    }
+
+    const bookingDialogVisible = ref(false)
+    const editingBookingForDialog = ref<Booking | Omit<Booking, 'id'> | null>(null)
+
+    function openBookingDialog(room: Room) {
+      // Create a new booking object (no id) with the room preselected
+      editingBookingForDialog.value = {
+        idCustomer: 0,
+        idRoom: room.id,
+        bookingStart: '',
+        bookingEnd: '',
+        extraCharges: 0,
+        amountPaid: 0,
+        reservedAt: null,
+        idReservedBy: 1004,
+        status: 'Pending'
+      }
+      bookingDialogVisible.value = true
+    }
+
+    async function onBookingSaved(bookingData: Booking | Omit<Booking, 'id'>) {
+      try {
+        if ('id' in bookingData && bookingData.id) {
+          // Update existing booking
+          await bookingStore.updateBooking(bookingData.id, bookingData)
+          showNotification('Booking updated successfully')
+        } else {
+          // Create new booking
+          await bookingStore.createBooking(bookingData)
+          showNotification('Booking created successfully')
+        }
+        // Refresh room list to reflect updated status (e.g., from Available to Reserved)
+        await store.fetchRooms()
+      } catch (err) {
+        showNotification('Operation failed', 'error')
+      } finally {
+        bookingDialogVisible.value = false
+        editingBookingForDialog.value = null
+      }
     }
 
   </script>

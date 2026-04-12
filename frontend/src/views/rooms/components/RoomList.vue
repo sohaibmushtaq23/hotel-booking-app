@@ -37,6 +37,7 @@
               :variant="selectedRoomId === room.id ? 'tonal' : 'outlined'"
               :color="selectedRoomId === room.id ? 'green' : undefined"
               @click="$emit('select', room)"
+              @dblclick="$emit('create-booking', room)"
               class="cursor-pointer"
             >
               <v-card-title class="text-subtitle-1 font-weight-bold">
@@ -133,6 +134,7 @@
     (e: 'select', room: Room): void
     (e: 'add'): void
     (e: 'delete'): void
+    (e: 'create-booking', room: Room): void
   }>()
   
 </script>
